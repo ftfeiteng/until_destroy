@@ -14,6 +14,7 @@ export declare const DECORATOR_APPLIED: unique symbol;
 export declare function getSymbol<T>(destroyMethodName?: keyof T): symbol;
 export declare function markAsDecorated<T>(type: InjectableType<T> | PipeType<T> | ɵDirectiveType<T> | ɵComponentType<T>): void;
 export interface UntilDestroyOptions {
+    className?: string;
     blackList?: string[];
     arrayName?: string;
     checkProperties?: boolean;

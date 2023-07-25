@@ -1,5 +1,6 @@
 import { Subject, Subscription, from, EMPTY, isEmpty } from 'rxjs';
 import { ɵNG_PIPE_DEF, ɵgetLContext, ɵglobal } from '@angular/core';
+import 'reflect-metadata';
 import { mergeMap, takeUntil } from 'rxjs/operators';
 
 const NG_PIPE_DEF = ɵNG_PIPE_DEF;
@@ -90,6 +91,9 @@ function decoratePipe(type, options) {
 }
 function UntilDestroy(options = {}) {
     return (type) => {
+        if (options.className) {
+            Reflect.defineMetadata('__className__', options.className, type.prototype);
+        }
         if (isPipe(type)) {
             decoratePipe(type, options);
         }
@@ -231,11 +235,12 @@ function untilDestroyed(instance, destroyMethodName) {
         const destroy$ = instance[symbol];
         setupSubjectUnsubscribedChecker(instance, destroy$);
         const startTime = Date.now();
-        console.log("Test123456");
         source.pipe(takeUntil(destroy$), isEmpty()).subscribe(empty => {
             if (empty) {
+                const constructorPrototypeName = Reflect.getMetadata('__className__', instance.constructor.prototype);
                 const endTime = Date.now();
-                console.log(`Source observable is Empty. Constructor: ${instance.constructor.name}. Timespan: ${((endTime - startTime) / 1000).toFixed(2)}s`);
+                console.log(`Source observable is Empty. Constructor: ${constructorPrototypeName ?? instance.constructor.name}. Timespan: ${((endTime - startTime) / 1000).toFixed(2)}s`);
+                throw new Error("testing if this is okay");
             }
         });
         return source.pipe(takeUntil(destroy$));
@@ -255,5 +260,4 @@ function ensureClassIsDecorated(instance) {
  */
 
 export { UntilDestroy, untilDestroyed };
-//# sourceMappingURL=ngneat-until-destroy.mjs.map
 //# sourceMappingURL=ngneat-until-destroy.mjs.map
