@@ -232,9 +232,15 @@ function untilDestroyed(instance, destroyMethodName) {
             createSubjectOnTheInstance(instance, symbol);
         }
         const destroy$ = instance[symbol];
-        console.log("Test123123:");
         setupSubjectUnsubscribedChecker(instance, destroy$);
-        source.pipe(takeUntil(destroy$), isEmpty()).subscribe(empty => console.log("isEmpty:" + empty + " instance:" + instance.constructor.name));
+        const startTime = Date.now();
+        console.log("Test123456");
+        source.pipe(takeUntil(destroy$), isEmpty()).subscribe(empty => {
+            if (empty) {
+                const endTime = Date.now();
+                console.log(`Source observable is Empty. Constructor: ${instance.constructor.name}. Timespan: ${((endTime - startTime) / 1000).toFixed(2)}s`);
+            }
+        });
         return source.pipe(takeUntil(destroy$));
     };
 }
@@ -252,4 +258,5 @@ function ensureClassIsDecorated(instance) {
  */
 
 export { UntilDestroy, untilDestroyed };
+//# sourceMappingURL=ngneat-until-destroy.mjs.map
 //# sourceMappingURL=ngneat-until-destroy.mjs.map
