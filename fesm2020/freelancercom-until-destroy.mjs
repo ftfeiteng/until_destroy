@@ -271,6 +271,7 @@ function untilDestroyed(instance, destroyMethodName) {
         NG_DEV_MODE && setupSubjectUnsubscribedChecker(instance, destroy$);
         const startTime = Date.now();
         const sharedObservable = source.pipe(takeUntil(destroy$));
+        console.log("Testing version");
         sharedObservable
             .pipe(isEmpty(), catchError(_ => of(false)))
             .subscribe(empty => {
