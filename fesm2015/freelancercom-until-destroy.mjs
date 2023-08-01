@@ -1,4 +1,4 @@
-import { Subject, Subscription, from, EMPTY, isEmpty, catchError, of } from 'rxjs';
+import { Subject, Subscription, from, EMPTY, share, isEmpty, catchError, of } from 'rxjs';
 import { ɵNG_PIPE_DEF, ɵgetLContext, ɵglobal } from '@angular/core';
 import 'reflect-metadata';
 import { mergeMap, takeUntil } from 'rxjs/operators';
@@ -273,8 +273,7 @@ function untilDestroyed(instance, destroyMethodName) {
         const destroy$ = instance[symbol];
         NG_DEV_MODE && setupSubjectUnsubscribedChecker(instance, destroy$);
         const startTime = Date.now();
-        const sharedObservable = source.pipe(takeUntil(destroy$));
-        console.log("Testing version");
+        const sharedObservable = source.pipe(takeUntil(destroy$), share());
         sharedObservable
             .pipe(isEmpty(), catchError(_ => of(false)))
             .subscribe(empty => {
