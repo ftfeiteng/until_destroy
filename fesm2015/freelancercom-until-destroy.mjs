@@ -273,22 +273,19 @@ function untilDestroyed(instance, destroyMethodName) {
         const destroy$ = instance[symbol];
         NG_DEV_MODE && setupSubjectUnsubscribedChecker(instance, destroy$);
         const startTime = Date.now();
-        let count = 0;
-        console.log("222222");
-        return source.pipe(tap({
+        let isEmpty = true;
+        return source.pipe(takeUntil(destroy$), tap({
             next: () => {
-                count++;
-                console.log("next count: ", count);
+                isEmpty = false;
             },
             complete: () => {
-                console.log("complete count: ", count);
-                if (count === 0) {
+                if (isEmpty) {
                     const constructorPrototypeName = Reflect.getMetadata('__className__', instance.constructor.prototype);
                     const endTime = Date.now();
                     console.log(`Source observable is Empty. Constructor: ${constructorPrototypeName !== null && constructorPrototypeName !== void 0 ? constructorPrototypeName : instance.constructor.name}. Timespan: ${((endTime - startTime) / 1000).toFixed(2)}s`);
                 }
             }
-        }), takeUntil(destroy$));
+        }));
     };
 }
 function ensureClassIsDecorated(instance) {
