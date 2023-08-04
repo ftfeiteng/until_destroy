@@ -1,4 +1,4 @@
-import { Subject, Subscription, from, EMPTY, share, isEmpty, catchError, of } from 'rxjs';
+import { Subject, Subscription, from, EMPTY, tap } from 'rxjs';
 import { ɵNG_PIPE_DEF, ɵgetLContext, ɵglobal } from '@angular/core';
 import 'reflect-metadata';
 import { mergeMap, takeUntil } from 'rxjs/operators';
@@ -270,17 +270,22 @@ function untilDestroyed(instance, destroyMethodName) {
         const destroy$ = instance[symbol];
         NG_DEV_MODE && setupSubjectUnsubscribedChecker(instance, destroy$);
         const startTime = Date.now();
-        const sharedObservable = source.pipe(takeUntil(destroy$), share());
-        sharedObservable
-            .pipe(isEmpty(), catchError(_ => of(false)))
-            .subscribe(empty => {
-            if (empty) {
-                const constructorPrototypeName = Reflect.getMetadata('__className__', instance.constructor.prototype);
-                const endTime = Date.now();
-                console.log(`Source observable is Empty. Constructor: ${constructorPrototypeName ?? instance.constructor.name}. Timespan: ${((endTime - startTime) / 1000).toFixed(2)}s`);
+        let count = 0;
+        console.log("222222");
+        return source.pipe(tap({
+            next: () => {
+                count++;
+                console.log("next count: ", count);
+            },
+            complete: () => {
+                console.log("complete count: ", count);
+                if (count === 0) {
+                    const constructorPrototypeName = Reflect.getMetadata('__className__', instance.constructor.prototype);
+                    const endTime = Date.now();
+                    console.log(`Source observable is Empty. Constructor: ${constructorPrototypeName ?? instance.constructor.name}. Timespan: ${((endTime - startTime) / 1000).toFixed(2)}s`);
+                }
             }
-        });
-        return sharedObservable;
+        }), takeUntil(destroy$));
     };
 }
 function ensureClassIsDecorated(instance) {

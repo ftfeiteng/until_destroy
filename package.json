@@ -2,7 +2,7 @@
   "$schema": "../../node_modules/ng-packagr/package.schema.json",
   "name": "@freelancercom/until-destroy",
   "description": "RxJS operator that unsubscribes when Angular component is destroyed",
-  "version": "9.2.3-fork.3",
+  "version": "9.2.3-fork.4",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/freelancer/until-destroy.git"
